@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Name Field -->
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Full Name"
+        android:inputType="textPersonName"
+        android:autofillHints="name"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Email Field -->
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email Address"
+        android:inputType="textEmailAddress"
+        android:autofillHints="emailAddress"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Date Field (uses EditText but only shows DatePickerDialog on click) -->
+    <EditText
+        android:id="@+id/etDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Date (Tap to Select)"
+        android:focusable="false"
+        android:clickable="true"
+        android:cursorVisible="false"
+        android:inputType="none"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- GPS Coordinates Display Field -->
+    <EditText
+        android:id="@+id/etCoordinates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="GPS: Latitude, Longitude"
+        android:inputType="text"
+        android:focusable="false"
+        android:cursorVisible="false"
+        android:enabled="true"
+        android:background="@android:color/transparent"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Fetch GPS Button -->
+    <Button
+        android:id="@+id/btnFetchGps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fetch Current GPS"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Submit Button -->
+    <Button
+        android:id="@+id/btnSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit Form" />
+
+</LinearLayout>
