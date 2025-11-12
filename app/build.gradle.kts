@@ -59,4 +59,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // added by bankole
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 }

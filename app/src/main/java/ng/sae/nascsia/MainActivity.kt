@@ -108,7 +108,7 @@ fun LoginScreen() {
                     // Simple validation and action
                     if (username.isBlank() || password.isBlank()) {
                         Toast.makeText(context, "Please enter both credentials.", Toast.LENGTH_SHORT).show()
-                    } else if (username == "u1" && password == "p1") {
+                    } else if (username == "u" && password == "p") {
                         Toast.makeText(context, "Login Successful! Hello, $username", Toast.LENGTH_LONG).show()
 
                         context.startActivity(Intent(context, FieldLocationActivity::class.java))

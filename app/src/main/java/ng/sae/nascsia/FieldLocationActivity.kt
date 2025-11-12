@@ -1,10 +1,14 @@
 package ng.sae.nascsia
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -21,6 +25,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ng.sae.nascsia.ui.theme.NASCSIATheme
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+
 
 class FieldLocationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +37,10 @@ class FieldLocationActivity : ComponentActivity() {
         setContent {
             NASCSIATheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    FieldLocationScreen(
+//                    FieldLocationScreen(
+//                        modifier = Modifier.padding(innerPadding)
+//                    )
+                    GPSLocationScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -197,6 +208,147 @@ fun StateDropdown(selectedState: String, onStateSelected: (String) -> Unit) {
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                 )
             }
+        }
+    }
+}
+
+
+
+/**
+ * Gets the last known location from the FusedLocationProviderClient.
+ * Note: Requires ACCESS_FINE_LOCATION permission to be granted.
+ */
+private fun getLastLocation(
+    client: FusedLocationProviderClient,
+    context: android.content.Context,
+    onLocationReceived: (String, String) -> Unit
+) {
+    // Check permission again, although it should be granted at this point
+    if (ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        Toast.makeText(context, "Location permission not granted.", Toast.LENGTH_SHORT).show()
+        return
+    }
+
+    client.lastLocation.addOnSuccessListener { location ->
+        if (location != null) {
+            val lat = String.format("%.6f", location.latitude)
+            val lon = String.format("%.6f", location.longitude)
+            onLocationReceived(lat, lon)
+            Toast.makeText(context, "Location captured successfully.", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Location not found. Try again or check settings.", Toast.LENGTH_SHORT).show()
+        }
+    }
+}
+
+
+/**
+ * Defines the composable UI for the dedicated GPS Location Screen.
+ */
+@Composable
+fun GPSLocationScreen(modifier: Modifier) {
+    // State for GPS coordinates
+    var latitude by remember { mutableStateOf("") }
+    var longitude by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+    val scrollState = rememberScrollState()
+
+    // Initialize Fused Location Provider Client once
+    val locationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+
+    // Permission Launcher: Handles the result of the runtime permission request
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission granted, now get the location
+            getLastLocation(locationClient, context) { lat, lon ->
+                latitude = lat
+                longitude = lon
+            }
+        } else {
+            Toast.makeText(context, "Location permission denied. Cannot get GPS coordinates.", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    // Function to check and launch permission request
+    fun checkPermissionAndGetLocation() {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Permission already granted, proceed to get location
+            getLastLocation(locationClient, context) { lat, lon ->
+                latitude = lat
+                longitude = lon
+            }
+        } else {
+            // Request permission
+            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
+
+    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp)
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center // Center content vertically
+        ) {
+
+            Text(
+                text = "Precise Location Finder",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = "Tap the button below to retrieve your current GPS coordinates.",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp, bottom = 40.dp)
+            )
+
+            // GET LOCATION BUTTON
+            Button(
+                onClick = { checkPermissionAndGetLocation() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 8.dp)
+            ) {
+                Spacer(Modifier.width(12.dp))
+                Text("GET MY GPS COORDINATES", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            // Latitude Field (Read Only)
+            OutlinedTextField(
+                value = latitude,
+                onValueChange = { /* Read Only */ },
+                readOnly = true,
+                label = { Text("Latitude (N/S)") },
+                placeholder = { Text("Press the button above") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Longitude Field (Read Only)
+            OutlinedTextField(
+                value = longitude,
+                onValueChange = { /* Read Only */ },
+                readOnly = true,
+                label = { Text("Longitude (E/W)") },
+                placeholder = { Text("Press the button above") },
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
