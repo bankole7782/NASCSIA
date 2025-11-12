@@ -1,5 +1,6 @@
 package ng.sae.nascsia
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -107,8 +108,10 @@ fun LoginScreen() {
                     // Simple validation and action
                     if (username.isBlank() || password.isBlank()) {
                         Toast.makeText(context, "Please enter both credentials.", Toast.LENGTH_SHORT).show()
-                    } else if (username == "compose" && password == "jetpack") {
+                    } else if (username == "u1" && password == "p1") {
                         Toast.makeText(context, "Login Successful! Hello, $username", Toast.LENGTH_LONG).show()
+
+                        context.startActivity(Intent(context, FieldLocationActivity::class.java))
                     } else {
                         Toast.makeText(context, "Login Failed. Check credentials.", Toast.LENGTH_SHORT).show()
                     }
