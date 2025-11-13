@@ -2,4 +2,6 @@
     <string name="app_name">NASC SIA</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_field_location">FieldLocationActivity</string>
+    <string name="title_activity_crop_information">CropInformationActivity</string>
+    <string name="title_activity_seed_source">SeedSourceActivity</string>
 </resources>
