@@ -4,4 +4,6 @@
     <string name="title_activity_field_location">FieldLocationActivity</string>
     <string name="title_activity_crop_information">CropInformationActivity</string>
     <string name="title_activity_seed_source">SeedSourceActivity</string>
+    <string name="title_activity_login_screen">LoginScreen</string>
+    <string name="title_activity_fields">FieldsActivity</string>
 </resources>

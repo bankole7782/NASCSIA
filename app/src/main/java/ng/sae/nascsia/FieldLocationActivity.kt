@@ -59,6 +59,10 @@ fun FieldLocationScreen(modifier: Modifier) {
     var address by remember { mutableStateOf("") }
     var mobileNumber by remember { mutableStateOf("") }
     var plantingArea by remember { mutableStateOf("") }
+    // State for GPS coordinates
+    var latitude by remember { mutableStateOf("") }
+    var longitude by remember { mutableStateOf("") }
+
     val context = LocalContext.current
     val scrollState = rememberScrollState()
 
@@ -132,11 +136,6 @@ fun FieldLocationScreen(modifier: Modifier) {
             Spacer(modifier = Modifier.height(40.dp))
 
             // GET LOCATION BUTTON
-            // State for GPS coordinates
-            var latitude by remember { mutableStateOf("") }
-            var longitude by remember { mutableStateOf("") }
-
-            val context = LocalContext.current
             val scrollState = rememberScrollState()
 
             // Initialize Fused Location Provider Client once
