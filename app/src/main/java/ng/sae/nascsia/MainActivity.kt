@@ -22,7 +22,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.serialization.json.Json
 import ng.sae.nascsia.ui.theme.NASCSIATheme
 import java.io.File
 
@@ -48,23 +47,19 @@ fun DecideFirstActivity() {
     val userDataFile = File(context.getExternalFilesDir(""), "user_data.json")
     if (!userDataFile.exists()) {
         context.startActivity(Intent(context, LoginActivity::class.java))
+        return
     }
 
-    val rawUserDataJson = userDataFile.readText()
-    val userDataObj = Json.decodeFromString<UserData>(rawUserDataJson)
-
-    if (userDataObj.accessCode.startsWith("c")) {
-        FieldsScreen()
-    } else if (userDataObj.accessCode.startsWith(prefix="i")) {
+    val userDataParts = userDataFile.readText().split("\n")
+    val userDataAccessCode = userDataParts[0]
+    val userDataUserName = userDataParts[1]
+    if (userDataAccessCode.startsWith("c")) {
+        ProductionPlanScreen()
+    } else if (userDataAccessCode.startsWith(prefix="i")) {
 
     } else {
         Toast.makeText(context, "Invalid credentials.", Toast.LENGTH_LONG).show()
         userDataFile.delete()
         context.startActivity(Intent(context, LoginActivity::class.java))
     }
-}
-
-@Composable
-fun FieldsScreen() {
-
 }

@@ -15,12 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NASCSIA">
         <activity
-            android:name=".FieldsActivity"
+            android:name=".ProductionPlanActivity"
             android:exported="false"
             android:label="@string/title_activity_fields"
             android:theme="@style/Theme.NASCSIA" />
         <activity
-            android:name=".LoginScreen"
+            android:name=".LoginActivity"
             android:exported="false"
             android:label="@string/title_activity_login_screen"
             android:theme="@style/Theme.NASCSIA" />

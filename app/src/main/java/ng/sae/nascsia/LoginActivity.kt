@@ -37,7 +37,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.serialization.json.Json
 import ng.sae.nascsia.ui.theme.NASCSIATheme
 import java.io.File
 
@@ -124,7 +123,7 @@ fun LoginScreen() {
                         Toast.makeText(context, "Please enter both credentials.", Toast.LENGTH_SHORT).show()
                     } else if (validateAndStoreAcessCode(context, username, password)) {
                         Toast.makeText(context, "Login Successful! Hello, $username", Toast.LENGTH_LONG).show()
-                        context.startActivity(Intent(context, FieldsActivity::class.java))
+                        context.startActivity(Intent(context, ProductionPlanActivity::class.java))
                     } else {
                         Toast.makeText(context, "Login Failed. Check credentials.", Toast.LENGTH_SHORT).show()
                     }
@@ -142,9 +141,9 @@ fun LoginScreen() {
 fun validateAndStoreAcessCode(context: Context, username: String, accessCode: String):Boolean {
     if (accessCode == "cp" || accessCode == "ap") {
         // test accounts
-        val obj = Json.encodeToString(UserData(accessCode = accessCode, userName = username))
+        val userStr = accessCode + "\n" + username
         val userDataFile = File(context.getExternalFilesDir(""), "user_data.json")
-        userDataFile.writeText(obj)
+        userDataFile.writeText(userStr)
         return true
     } else {
         // do network call check

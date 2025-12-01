@@ -1,5 +1,6 @@
 package ng.sae.nascsia
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -72,7 +73,7 @@ data class CropInfoState(
 // --- 2. MAIN ACTIVITY AND THEME (Mocked for single file) ---
 
 class CropInformationActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
+//    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -225,7 +226,10 @@ fun CropInfoScreen() {
                         Toast.makeText(context, "Data submitted for ${cropInfoState.crop}", Toast.LENGTH_LONG).show()
                         showSubmissionMessage = true
                         // Reset form state after successful submission
-                        cropInfoState = CropInfoState()
+//                        cropInfoState = CropInfoState()
+
+                        context.startActivity(Intent(context, SeedSourceActivity::class.java))
+
                     }
                 },
                 modifier = Modifier
