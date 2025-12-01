@@ -49,17 +49,17 @@ enum class Crop(val displayName: String) {
         fun getDisplayNames() = entries.map { it.displayName }
     }
 }
-
-enum class SeedClass(val displayName: String) {
-    NUCLEUS("Nucleus"),
-    BREEDER("Breeder"),
-    FOUNDATION("Foundation"),
-    CERTIFIED("Certified");
-
-    companion object {
-        fun getDisplayNames() = entries.map { it.displayName }
-    }
-}
+//
+//enum class SeedClass(val displayName: String) {
+//    NUCLEUS("Nucleus"),
+//    BREEDER("Breeder"),
+//    FOUNDATION("Foundation"),
+//    CERTIFIED("Certified");
+//
+//    companion object {
+//        fun getDisplayNames() = entries.map { it.displayName }
+//    }
+//}
 
 data class CropInfoState(
     val crop: String = "",

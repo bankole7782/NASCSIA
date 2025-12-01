@@ -15,6 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NASCSIA">
         <activity
+            android:name=".CropInformationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_crop_information"
+            android:theme="@style/Theme.NASCSIA" />
+        <activity
             android:name=".FieldsActivity"
             android:exported="false"
             android:label="@string/title_activity_fields"
@@ -28,11 +33,6 @@
             android:name=".SeedSourceActivity"
             android:exported="false"
             android:label="@string/title_activity_seed_source"
-            android:theme="@style/Theme.NASCSIA" />
-        <activity
-            android:name=".CropInformationActivity"
-            android:exported="false"
-            android:label="@string/title_activity_crop_information"
             android:theme="@style/Theme.NASCSIA" />
         <activity
             android:name=".FieldLocationActivity"
