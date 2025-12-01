@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -27,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ng.sae.nascsia.ui.theme.NASCSIATheme
+import java.io.File
 
 class ProductionPlanActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,29 +61,33 @@ fun ProductionPlanScreen(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = "NASC SIA : Production Plan",
-                fontSize = 20.sp,
+                fontSize = 30.sp,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(4.dp))
+            val existingPlans = allPlans(context)
+
+            if (existingPlans.isNotEmpty()) {
+                LazyColumn(modifier= Modifier.height(100.dp)) {
+                    items(existingPlans) { item ->
+                        Text(text = "Date: " +  item["plan_name"]!!, fontSize = 20.sp)
+                        Text(text = "Crop: " + item["plan_crop"]!!)
+                        Text(text = "Address: " + item["plan_address"]!!)
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Add Button
             Button(
                 onClick = {
-//                    // Simple validation and action
-//                    if (username.isBlank() || password.isBlank()) {
-//                        Toast.makeText(context, "Please enter both credentials.", Toast.LENGTH_SHORT).show()
-//                    } else if (validateAndStoreAcessCode(context, username, password)) {
-//                        Toast.makeText(context, "Login Successful! Hello, $username", Toast.LENGTH_LONG).show()
-//                        context.startActivity(Intent(context, ProductionPlanActivity::class.java))
-//                    } else {
-//                        Toast.makeText(context, "Login Failed. Check credentials.", Toast.LENGTH_SHORT).show()
-//                    }
-
                     context.startActivity(Intent(context, FieldLocationActivity::class.java))
                 },
                 modifier = Modifier
@@ -107,18 +114,24 @@ fun ProductionPlanScreen(modifier: Modifier = Modifier) {
     }
 }
 
-//
-//fun getAllFieldsRemote(context: Context, accessCode: String): List<FieldDef>? {
-//
-//    val testDataFields = listOf(
-//        FieldDef("Kano", "Kano Street","8323", 1.2, 7.323, 8.2343),
-//        FieldDef("Kaduna", "Kaduna Street","32324", 2.0, 7.123, 8.232)
-//    )
-//
-//    if (accessCode == "cp" || accessCode == "ap") {
-//        return testDataFields
-//    } else {
-//        // do network calls
-//        return null
-//    }
-//}
+fun allPlans(context: Context) : List<Map<String, String>> {
+    val ret: MutableList<Map<String, String>> = mutableListOf()
+    val plansDir = File(context.getExternalFilesDir(""), "plans")
+    if (! plansDir.exists() && ! plansDir.isDirectory) {
+        return mutableListOf<Map<String, String>>()
+    }
+
+    val plans = plansDir.listFiles()
+    for (plan in plans!!) {
+        var planDetailsMap = deserializePlan(context, plan.name)
+
+        var retMap: MutableMap<String, String> = mutableMapOf()
+        retMap["plan_name"] = plan.name
+        retMap["plan_address"] = planDetailsMap["address"].toString()
+        retMap["plan_crop"] = planDetailsMap["crop"].toString()
+
+        ret.add(retMap)
+    }
+
+    return ret
+}

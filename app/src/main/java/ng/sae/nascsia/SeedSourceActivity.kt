@@ -1,6 +1,8 @@
 package ng.sae.nascsia
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,9 +22,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import java.io.File
 
 
 class SeedSourceActivity : ComponentActivity() {
@@ -50,6 +56,7 @@ data class SeedSourceInfo(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SeedSourceScreen() {
+    val context = LocalContext.current
     var info by remember { mutableStateOf(SeedSourceInfo()) }
     val scrollState = rememberScrollState()
 
@@ -58,43 +65,22 @@ fun SeedSourceScreen() {
     val isYearValid = info.productionYear.toIntOrNull() in 1900..2100 || info.productionYear.isEmpty()
     val isFormComplete = isQuantityValid && info.supplierName.isNotBlank() && isYearValid
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Seed Source Procurement", style = MaterialTheme.typography.titleLarge) }
-            )
-        },
-        bottomBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Button(
-                    onClick = {
-                        if (isFormComplete) {
-                            println("Saving Seed Source Info: $info")
-                            // TODO: Implement actual save logic (e.g., to a database)
-                        }
-                    },
-                    enabled = isFormComplete,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Save Seed Source")
-                }
-            }
-        }
-    ) { paddingValues ->
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .padding(horizontal = 16.dp)
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = "Seed Source",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(40.dp))
 
             // 1. Quantity Procured (kg)
             OutlinedTextField(
@@ -162,6 +148,36 @@ fun SeedSourceScreen() {
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(Modifier.height(16.dp))
+
+
+            // --- Submission Button ---
+            Button(
+                onClick = {
+                    // Simple validation
+
+                    if (info.productionYear.isEmpty() || info.quantityProcured.isEmpty() ||
+                        info.seedCodexNumber.isEmpty() || info.supplierName.isEmpty()) {
+                        Toast.makeText(context, "Please fill out all fields.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        PlanDefMap["srcProductionYear"] = info.productionYear
+                        PlanDefMap["srcQuantityProcured"] = info.quantityProcured
+                        PlanDefMap["srcSeedCodexNumber"] = info.seedCodexNumber
+                        PlanDefMap["srcSeedClass"] = info.seedClass
+                        PlanDefMap["srcSupplierName"] = info.supplierName
+
+                        serializePlan(context, PlanDefMap)
+                        PlanDefMap = mutableMapOf()
+
+                        context.startActivity(Intent(context, ProductionPlanActivity::class.java))
+
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+            ) {
+                Text("Submit Production Plan")
+            }
         }
     }
 }

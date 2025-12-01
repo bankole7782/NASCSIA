@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat.enableEdgeToEdge
 import java.time.Year
 import ng.sae.nascsia.ui.theme.NASCSIATheme
@@ -44,6 +45,7 @@ enum class Crop(val displayName: String) {
     SORGHUM("Sorghum"),
     SOYBEAN("Soybean"),
     SWEET_POTATO("Sweet potato"),
+    WHEAT("Wheat"),
     YAM("Yam");
 
     companion object {
@@ -150,11 +152,12 @@ fun CropInfoScreen() {
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = "Seed Production Details",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
+                fontSize = 20.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.primary
             )
 
             // --- Crop Dropdown ---
@@ -221,12 +224,17 @@ fun CropInfoScreen() {
                         cropInfoState.plantingDate.isEmpty()) {
                         Toast.makeText(context, "Please fill out all fields.", Toast.LENGTH_SHORT).show()
                     } else {
-                        // Logic to handle submission (e.g., save to database, API call)
-                        // For this example, we just show a toast and a success message.
-                        Toast.makeText(context, "Data submitted for ${cropInfoState.crop}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context,  "Step 2 of 3",Toast.LENGTH_LONG).show()
+
                         showSubmissionMessage = true
                         // Reset form state after successful submission
 //                        cropInfoState = CropInfoState()
+
+                        PlanDefMap["crop"] = cropInfoState.crop
+                        PlanDefMap["seedClass"] = cropInfoState.seedClass
+                        PlanDefMap["variety"] = cropInfoState.variety
+                        PlanDefMap["productionYear"] = cropInfoState.productionYear
+                        PlanDefMap["plantingDate"] = cropInfoState.plantingDate
 
                         context.startActivity(Intent(context, SeedSourceActivity::class.java))
 

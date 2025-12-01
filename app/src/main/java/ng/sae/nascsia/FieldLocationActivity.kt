@@ -78,14 +78,9 @@ fun FieldLocationScreen(modifier: Modifier) {
             Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = "Field Location Data",
-                fontSize = 28.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "Input Details for New Site",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(40.dp))
 
@@ -211,11 +206,14 @@ fun FieldLocationScreen(modifier: Modifier) {
                         || plantingArea.isBlank() || latitude.isBlank() || longitude.isBlank() ) {
                         Toast.makeText(context, "Please fill in all field details.", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(
-                            context,
-                            "Data Saved! State: $state, Area: $plantingArea ha",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        Toast.makeText(context,  "Step 1 of 3",Toast.LENGTH_LONG).show()
+
+                        PlanDefMap["state"] = state
+                        PlanDefMap["address"] = address
+                        PlanDefMap["mobileNumber"] = mobileNumber
+                        PlanDefMap["plantingArea"] = plantingArea
+                        PlanDefMap["latitude"] = latitude
+                        PlanDefMap["longitude"] = longitude
 
                         context.startActivity(Intent(context, CropInformationActivity::class.java))
 
