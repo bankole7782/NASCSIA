@@ -1,6 +1,5 @@
 package ng.sae.nascsia
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,7 +20,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,18 +36,6 @@ class SeedSourceActivity : ComponentActivity() {
         }
     }
 }
-
-enum class SeedClass(val displayName: String) {
-    NUCLEUS("Nucleus"),
-    BREEDER("Breeder"),
-    FOUNDATION("Foundation"),
-    CERTIFIED("Certified");
-
-    companion object {
-        fun getDisplayNames() = entries.map { it.displayName }
-    }
-}
-
 /**
  * Data class representing the state of the Seed Source Information form.
  */
@@ -66,7 +52,6 @@ data class SeedSourceInfo(
 fun SeedSourceScreen() {
     var info by remember { mutableStateOf(SeedSourceInfo()) }
     val scrollState = rememberScrollState()
-    val context = LocalContext.current
 
     // Simple validation flags
     val isQuantityValid = info.quantityProcured.toFloatOrNull() != null
@@ -91,8 +76,6 @@ fun SeedSourceScreen() {
                         if (isFormComplete) {
                             println("Saving Seed Source Info: $info")
                             // TODO: Implement actual save logic (e.g., to a database)
-                            context.startActivity(Intent(context, CropInformationActivity::class.java))
-
                         }
                     },
                     enabled = isFormComplete,
