@@ -5,6 +5,6 @@
     <string name="title_activity_crop_information">CropInformationActivity</string>
     <string name="title_activity_seed_source">SeedSourceActivity</string>
     <string name="title_activity_login_screen">LoginScreen</string>
-    <string name="title_activity_fields">FieldsActivity</string>
+    <string name="title_activity_fields">ProductionPlanActivity</string>
     <string name="title_activity_production_plan_view">ProductionPlanViewActivity</string>
 </resources>

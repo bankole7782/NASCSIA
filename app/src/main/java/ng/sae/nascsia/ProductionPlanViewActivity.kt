@@ -51,7 +51,7 @@ fun PPViewScreen(item: Map<String, String>, planFileName: String?, modifier: Mod
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
             .padding(20.dp)
             .verticalScroll(scrollState)
     ) {
@@ -62,7 +62,7 @@ fun PPViewScreen(item: Map<String, String>, planFileName: String?, modifier: Mod
             fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         for ((key, value) in item) {
             Text(key, fontWeight = FontWeight.Bold)

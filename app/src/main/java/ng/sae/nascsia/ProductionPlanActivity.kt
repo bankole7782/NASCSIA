@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +33,7 @@ import java.io.File
 class ProductionPlanActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
+        enableEdgeToEdge()
         setContent {
             NASCSIATheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -50,64 +51,62 @@ fun ProductionPlanScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
 
-    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(24.dp),
 //                .verticalScroll(scrollState), // Make the form scrollable
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = "NASC SIA : Production Plan",
-                fontSize = 30.sp,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+        Spacer(modifier = Modifier.height(20.dp))
+        Text(
+            text = "NASC SIA : Production Plan",
+            fontSize = 30.sp,
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
 
-            Spacer(modifier = Modifier.height(4.dp))
-            val existingPlans = allPlans(context)
+        Spacer(modifier = Modifier.height(10.dp))
+        val existingPlans = allPlans(context)
 
-            if (existingPlans.isNotEmpty()) {
-                LazyColumn(modifier= Modifier
+        if (existingPlans.isNotEmpty()) {
+            LazyColumn(modifier= Modifier
 //                    .verticalScroll(scrollState)
-                ) {
-                    items(existingPlans) { item ->
-                        PPView(item)
-                        Spacer(modifier=Modifier.height(10.dp))
-                    }
+            ) {
+                items(existingPlans) { item ->
+                    PPView(item)
+                    Spacer(modifier=Modifier.height(10.dp))
                 }
             }
+        }
 
-            Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
-            // Add Button
-            Button(
-                onClick = {
-                    context.startActivity(Intent(context, FieldLocationActivity::class.java))
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-            ) {
-                Text("Add Production Plan", fontSize = 18.sp)
-            }
+        // Add Button
+        Button(
+            onClick = {
+                context.startActivity(Intent(context, FieldLocationActivity::class.java))
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
+            Text("Add Production Plan", fontSize = 18.sp)
+        }
 
-            Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
-            // Sync Button
-            Button(
-                onClick = {
-                    // sync info
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-            ) {
-                Text("Sync with NASC", fontSize = 18.sp)
-            }
+        // Sync Button
+        Button(
+            onClick = {
+                // sync info
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
+            Text("Sync with NASC", fontSize = 18.sp)
         }
     }
 }
