@@ -32,26 +32,6 @@ import ng.sae.nascsia.ui.theme.NASCSIATheme
 
 // --- 1. ENUMS AND DATA CLASSES ---
 
-enum class Crop(val displayName: String) {
-    BANANA_PLANTAIN("Banana / Plantain"),
-    BENI_SEED("Beni seed"),
-    CASSAVA("Cassava"),
-    COWPEA("Cowpea"),
-    COTTON("Cotton"),
-    MAIZE("Maize"),
-    MILLET("Millet"),
-    POTATO("Potato"),
-    RICE("Rice"),
-    SORGHUM("Sorghum"),
-    SOYBEAN("Soybean"),
-    SWEET_POTATO("Sweet potato"),
-    WHEAT("Wheat"),
-    YAM("Yam");
-
-    companion object {
-        fun getDisplayNames() = entries.map { it.displayName }
-    }
-}
 
 enum class SeedClass(val displayName: String) {
     NUCLEUS("Nucleus"),
@@ -78,6 +58,8 @@ class CropInformationActivity : ComponentActivity() {
 //    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+
         setContent {
             // Simplified theme for this single file
             NASCSIATheme() {
@@ -133,6 +115,12 @@ fun <T : Enum<T>> EnumDropdown(
     }
 }
 
+val cropData = mapOf(
+    "Corn" to listOf("Sweet Corn", "Field Corn", "Popcorn"),
+    "Wheat" to listOf("Hard Red Winter", "Soft White", "Durum"),
+    "Tomato" to listOf("Cherry", "Roma", "Beefsteak", "Heirloom")
+)
+
 // --- 4. MAIN SCREEN COMPOSABLE ---
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -143,6 +131,16 @@ fun CropInfoScreen() {
     var cropInfoState by remember { mutableStateOf(CropInfoState()) }
     var showSubmissionMessage by remember { mutableStateOf(false) }
 
+    // State for the Crop Dropdown
+    var cropExpanded by remember { mutableStateOf(false) }
+    var selectedCrop by remember { mutableStateOf("") }
+
+    // State for the Variety Dropdown
+    var varietyExpanded by remember { mutableStateOf(false) }
+    var selectedVariety by remember { mutableStateOf("") }
+
+    // Get varieties based on selected crop, or empty list if none selected
+    val varieties = cropData[selectedCrop] ?: emptyList()
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
@@ -159,26 +157,73 @@ fun CropInfoScreen() {
                 fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.primary
             )
+            Spacer(modifier = Modifier.height(10.dp))
 
-            // --- Crop Dropdown ---
-            EnumDropdown(
-                label = "Crop",
-                options = Crop.getDisplayNames(),
-                selectedOption = cropInfoState.crop,
-                onOptionSelected = { selectedCrop ->
-                    cropInfoState = cropInfoState.copy(crop = selectedCrop)
+
+            // --- CROP DROPDOWN ---
+            ExposedDropdownMenuBox(
+                expanded = cropExpanded,
+                onExpandedChange = { cropExpanded = !cropExpanded }
+            ) {
+                OutlinedTextField(
+                    value = selectedCrop,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Select Crop") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = cropExpanded) },
+                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                )
+
+                ExposedDropdownMenu(
+                    expanded = cropExpanded,
+                    onDismissRequest = { cropExpanded = false }
+                ) {
+                    cropData.keys.forEach { crop ->
+                        DropdownMenuItem(
+                            text = { Text(crop) },
+                            onClick = {
+                                selectedCrop = crop
+                                selectedVariety = "" // Reset variety when crop changes
+                                cropExpanded = false
+                            }
+                        )
+                    }
                 }
-            )
+            }
 
-            // --- Variety Text Field ---
-            OutlinedTextField(
-                value = cropInfoState.variety,
-                onValueChange = { cropInfoState = cropInfoState.copy(variety = it) },
-                label = { Text("Variety") },
-                placeholder = { Text("e.g., Tainung No. 1, Oba Super 6") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
-            )
+            // --- VARIETY DROPDOWN ---
+            ExposedDropdownMenuBox(
+                expanded = varietyExpanded,
+                onExpandedChange = {
+                    // Only allow expansion if a crop is selected
+                    if (selectedCrop.isNotEmpty()) varietyExpanded = !varietyExpanded
+                }
+            ) {
+                OutlinedTextField(
+                    value = selectedVariety,
+                    onValueChange = {},
+                    readOnly = true,
+                    enabled = selectedCrop.isNotEmpty(), // Disable if no crop selected
+                    label = { Text("Select Variety") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = varietyExpanded) },
+                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                )
+
+                ExposedDropdownMenu(
+                    expanded = varietyExpanded,
+                    onDismissRequest = { varietyExpanded = false }
+                ) {
+                    varieties.forEach { variety ->
+                        DropdownMenuItem(
+                            text = { Text(variety) },
+                            onClick = {
+                                selectedVariety = variety
+                                varietyExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
 
             // --- Seed Class Dropdown ---
             EnumDropdown(
@@ -219,8 +264,8 @@ fun CropInfoScreen() {
             Button(
                 onClick = {
                     // Simple validation
-                    if (cropInfoState.crop.isEmpty() || cropInfoState.seedClass.isEmpty() ||
-                        cropInfoState.variety.isEmpty() || cropInfoState.productionYear.isEmpty() ||
+                    if (selectedCrop.isEmpty() || cropInfoState.seedClass.isEmpty() ||
+                        selectedVariety.isEmpty() || cropInfoState.productionYear.isEmpty() ||
                         cropInfoState.plantingDate.isEmpty()) {
                         Toast.makeText(context, "Please fill out all fields.", Toast.LENGTH_SHORT).show()
                     } else {
@@ -230,9 +275,9 @@ fun CropInfoScreen() {
                         // Reset form state after successful submission
 //                        cropInfoState = CropInfoState()
 
-                        PlanDefMap["crop"] = cropInfoState.crop
+                        PlanDefMap["crop"] = selectedCrop
                         PlanDefMap["seedClass"] = cropInfoState.seedClass
-                        PlanDefMap["variety"] = cropInfoState.variety
+                        PlanDefMap["variety"] = selectedVariety
                         PlanDefMap["productionYear"] = cropInfoState.productionYear
                         PlanDefMap["plantingDate"] = cropInfoState.plantingDate
 
