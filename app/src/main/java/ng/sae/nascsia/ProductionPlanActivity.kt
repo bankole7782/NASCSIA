@@ -3,10 +3,8 @@ package ng.sae.nascsia
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,8 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -34,7 +32,7 @@ import java.io.File
 class ProductionPlanActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
         setContent {
             NASCSIATheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -56,8 +54,8 @@ fun ProductionPlanScreen(modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp)
-                .verticalScroll(scrollState), // Make the form scrollable
+                .padding(24.dp),
+//                .verticalScroll(scrollState), // Make the form scrollable
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -73,17 +71,17 @@ fun ProductionPlanScreen(modifier: Modifier = Modifier) {
             val existingPlans = allPlans(context)
 
             if (existingPlans.isNotEmpty()) {
-                LazyColumn(modifier= Modifier.height(100.dp)) {
+                LazyColumn(modifier= Modifier
+//                    .verticalScroll(scrollState)
+                ) {
                     items(existingPlans) { item ->
-                        Text(text = "Date: " +  item["plan_name"]!!, fontSize = 20.sp)
-                        Text(text = "Crop: " + item["plan_crop"]!!)
-                        Text(text = "Address: " + item["plan_address"]!!)
-                        Spacer(modifier = Modifier.height(4.dp))
+                        PPView(item)
+                        Spacer(modifier=Modifier.height(10.dp))
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Add Button
             Button(
@@ -110,6 +108,30 @@ fun ProductionPlanScreen(modifier: Modifier = Modifier) {
             ) {
                 Text("Sync with NASC", fontSize = 18.sp)
             }
+        }
+    }
+}
+
+@Composable
+fun PPView(item: Map<String, String>) {
+    val ctx = LocalContext.current
+    Card(
+        modifier = Modifier
+            .fillMaxSize(),
+        onClick = {
+            val intent1 = Intent(ctx, ProductionPlanViewActivity::class.java)
+            intent1.putExtra("planFileName", item["plan_name"])
+            ctx.startActivity(intent1)
+        },
+    ) {
+        Column(
+        modifier = Modifier.padding(10.dp)
+        ) {
+            Text(text = "Date: " +  item["plan_name"]!!, fontSize = 20.sp)
+            Text(text = "Crop: " + item["plan_crop"]!!)
+            Text(text = "Address: " + item["plan_address"]!!)
+            Text(text="Synced: false")
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }

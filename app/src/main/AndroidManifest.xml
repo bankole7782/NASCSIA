@@ -15,6 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NASCSIA">
         <activity
+            android:name=".ProductionPlanViewActivity"
+            android:exported="false"
+            android:label="@string/title_activity_production_plan_view"
+            android:theme="@style/Theme.NASCSIA" />
+        <activity
             android:name=".ProductionPlanActivity"
             android:exported="false"
             android:label="@string/title_activity_fields"

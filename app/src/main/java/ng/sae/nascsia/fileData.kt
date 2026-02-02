@@ -8,25 +8,25 @@ import java.util.Locale
 
 data class UserData(val accessCode: String, val userName: String)
 
-data class PlanDef(
-    val staffName: String,
-    val state: String,
-    val address: String,
-    val mobileNumber: String,
-    val plantingArea: Double,
-    val latitude: Double,
-    val longitude: Double,
-    val crop: String,
-    val variety: String,
-    val seedClass: String,
-    val productionYear: String,
-    val plantingDate: String,
-    val srcQuantityProcured: String,
-    val srcSeedClass: SeedClass,
-    val srcSeedCodexNumber: String, // Optional field
-    val srcSupplierName: String,
-    val srcProductionYear: String
-)
+//data class PlanDef(
+//    val staffName: String,
+//    val state: String,
+//    val address: String,
+//    val mobileNumber: String,
+//    val plantingArea: Double,
+//    val latitude: Double,
+//    val longitude: Double,
+//    val crop: String,
+//    val variety: String,
+//    val seedClass: String,
+//    val productionYear: String,
+//    val plantingDate: String,
+//    val srcQuantityProcured: String,
+//    val srcSeedClass: SeedClass,
+//    val srcSeedCodexNumber: String, // Optional field
+//    val srcSupplierName: String,
+//    val srcProductionYear: String
+//)
 
 fun getCurrentTimeString(): String {
     // Get the current date and time
@@ -55,8 +55,8 @@ fun serializePlan(context: Context, inMap: MutableMap<String, Any>) {
     planFile.writeText(outStr)
 }
 
-fun deserializePlan(context: Context, planFileName: String): Map<String, Any> {
-    var outMap: MutableMap<String, Any> = mutableMapOf()
+fun deserializePlan(context: Context, planFileName: String?): Map<String, String> {
+    var outMap: MutableMap<String, String> = mutableMapOf()
     val planFile = File(context.getExternalFilesDir(""), "plans/"+planFileName)
     val planFileText = planFile.readText()
     val planFileTextParts  = planFileText.split("\n")
@@ -67,4 +67,10 @@ fun deserializePlan(context: Context, planFileName: String): Map<String, Any> {
         }
     }
     return outMap
+}
+
+fun getDateStrFromFilename(inStr: String): String {
+    var tmp = inStr.replace(".txt", "")
+    tmp = tmp.replace("_", "  ")
+    return tmp
 }
