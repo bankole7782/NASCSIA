@@ -115,11 +115,6 @@ fun <T : Enum<T>> EnumDropdown(
     }
 }
 
-val cropData = mapOf(
-    "Corn" to listOf("Sweet Corn", "Field Corn", "Popcorn"),
-    "Wheat" to listOf("Hard Red Winter", "Soft White", "Durum"),
-    "Tomato" to listOf("Cherry", "Roma", "Beefsteak", "Heirloom")
-)
 
 // --- 4. MAIN SCREEN COMPOSABLE ---
 
