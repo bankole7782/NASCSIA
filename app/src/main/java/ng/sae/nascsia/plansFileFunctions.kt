@@ -1,6 +1,7 @@
 package ng.sae.nascsia
 
 import android.content.Context
+import android.util.Log
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -73,4 +74,10 @@ fun getDateStrFromFilename(inStr: String): String {
     var tmp = inStr.replace(".txt", "")
     tmp = tmp.replace("_", "  ")
     return tmp
+}
+
+fun getPhotoFile(context: Context, planPhotoName: String): File {
+    val planPhotos = File(context.getExternalFilesDir(""), "plan_photos")
+    val returnFile = File(planPhotos, planPhotoName.trim())
+    return returnFile
 }

@@ -1,8 +1,10 @@
 package ng.sae.nascsia
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -16,18 +18,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage // Requires Coil dependency
+import ng.sae.nascsia.ui.theme.NASCSIATheme
 import java.io.File
 
 class PPlanPhotosActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-
+        
         setContent {
-            MaterialTheme {
+            NASCSIATheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     PPlanPhotosScreen()
                 }
@@ -39,6 +42,9 @@ class PPlanPhotosActivity : ComponentActivity() {
 
 @Composable
 fun PPlanPhotosScreen() {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
     var seedSrcImageUri by remember { mutableStateOf<Uri?>(null) }
     var fieldPhoto1ImageUri by remember { mutableStateOf<Uri?>(null) }
     var fieldPhoto2ImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -153,7 +159,27 @@ fun PPlanPhotosScreen() {
 
         // end to screen
         Button(
-            onClick = { /* Handle Save */ },
+            onClick = {
+                // save photos
+                val receiptPhotoName = "receipt_${System.currentTimeMillis()}.jpg"
+                saveImageToInternalStorage(context, seedSrcImageUri!!, receiptPhotoName)
+
+                val field1PhotoName = "field1_${System.currentTimeMillis()}.jpg"
+                saveImageToInternalStorage(context, fieldPhoto1ImageUri!!, field1PhotoName)
+
+                val field2PhotoName = "field2_${System.currentTimeMillis()}.jpg"
+                saveImageToInternalStorage(context, fieldPhoto2ImageUri!!, field2PhotoName)
+
+                PlanDefMap["receipt_photo"] = receiptPhotoName
+                PlanDefMap["field_photo_1"] = field1PhotoName
+                PlanDefMap["field_photo_2"] = field2PhotoName
+
+                serializePlan(context, PlanDefMap)
+                PlanDefMap = mutableMapOf()
+
+                context.startActivity(Intent(context, ProductionPlanActivity::class.java))
+
+            },
             enabled =  seedSrcImageUri != null && fieldPhoto1ImageUri != null && fieldPhoto2ImageUri != null,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -162,15 +188,19 @@ fun PPlanPhotosScreen() {
     }
 }
 
-fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
+fun saveImageToInternalStorage(context: Context, uri: Uri, filename: String): String? {
     val inputStream = context.contentResolver.openInputStream(uri)
-    val file = File(context.filesDir, "profile_picture_${System.currentTimeMillis()}.jpg")
+//    val file = File(context.getExternalFilesDir(""), "receipt_${System.currentTimeMillis()}.jpg")
+    val planPhotos = File(context.getExternalFilesDir(""), "plan_photos")
+    planPhotos.mkdirs()
+
+    val file = File(planPhotos, filename)
 
     return try {
         inputStream?.use { input ->
             file.outputStream().use { output ->
                 input.copyTo(output)
-            }
+        MaterialTheme    }
         }
         file.absolutePath // This is what we store in the DB
     } catch (e: Exception) {

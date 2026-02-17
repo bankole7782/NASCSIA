@@ -165,10 +165,7 @@ fun SeedSourceScreen() {
                         PlanDefMap["srcSeedClass"] = info.seedClass
                         PlanDefMap["srcSupplierName"] = info.supplierName
 
-                        serializePlan(context, PlanDefMap)
-                        PlanDefMap = mutableMapOf()
-
-                        context.startActivity(Intent(context, ProductionPlanActivity::class.java))
+                        context.startActivity(Intent(context, PPlanPhotosActivity::class.java))
 
                     }
                 },

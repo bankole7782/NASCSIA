@@ -18,9 +18,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import ng.sae.nascsia.ui.theme.NASCSIATheme
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -48,6 +51,7 @@ class ProductionPlanViewActivity : ComponentActivity() {
 
 @Composable
 fun PPViewScreen(item: Map<String, String>, planFileName: String?, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
 
     Column(
@@ -65,12 +69,39 @@ fun PPViewScreen(item: Map<String, String>, planFileName: String?, modifier: Mod
         Spacer(modifier = Modifier.height(10.dp))
 
         for ((key, value) in item) {
+            if (key in listOf("receipt_photo",  "field_photo_1", "field_photo_2")) {
+                continue
+            }
             Text(key, fontWeight = FontWeight.Bold)
             Text(value)
             Spacer(Modifier.height(5.dp))
         }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text("Receipt Photo", fontWeight = FontWeight.Bold)
+        AsyncImage(
+            model = getPhotoFile(context, item["receipt_photo"]!!),
+            contentDescription = "Receipt Photo",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
 
         Spacer(modifier = Modifier.height(4.dp))
+        Text("Field Photo 1", fontWeight = FontWeight.Bold)
+        AsyncImage(
+            model = getPhotoFile(context, item["field_photo_1"]!!),
+            contentDescription = "Receipt Photo",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+        Text("Field Photo 2", fontWeight = FontWeight.Bold)
+        AsyncImage(
+            model = getPhotoFile(context, item["field_photo_2"]!!),
+            contentDescription = "Receipt Photo",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
 
         // Sync Button
         Button(

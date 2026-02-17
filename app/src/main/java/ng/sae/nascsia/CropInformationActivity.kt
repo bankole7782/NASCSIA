@@ -287,25 +287,6 @@ fun CropInfoScreen() {
                 Text("Submit Crop Information")
             }
 
-            // Submission Success Message (Animated)
-            AnimatedVisibility(
-                visible = showSubmissionMessage,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)
-                ) {
-                    Text(
-                        text = "Successfully submitted data!",
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-            }
         }
     }
 }
