@@ -7,4 +7,5 @@
     <string name="title_activity_login_screen">LoginScreen</string>
     <string name="title_activity_fields">ProductionPlanActivity</string>
     <string name="title_activity_production_plan_view">ProductionPlanViewActivity</string>
+    <string name="title_activity_pplan_photos">PPlanPhotosActivity</string>
 </resources>

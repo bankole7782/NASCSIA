@@ -56,7 +56,7 @@ fun DecideFirstActivity() {
     val userDataAccessCode = userDataParts[0]
     val userDataUserName = userDataParts[1]
     if (userDataAccessCode.startsWith("c")) {
-        context.startActivity(Intent(context, ProductionPlanActivity::class.java))
+        context.startActivity(Intent(context, PPlanPhotosActivity::class.java))
 //        ProductionPlanScreen()
     } else if (userDataAccessCode.startsWith(prefix="i")) {
 
