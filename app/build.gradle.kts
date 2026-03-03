@@ -63,4 +63,11 @@ dependencies {
     // added by bankole
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // define a BOM and its version
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:5.3.0"))
+
+    // define any required OkHttp artifacts without version
+    implementation("com.squareup.okhttp3:okhttp")
+    implementation("com.squareup.okhttp3:logging-interceptor")
 }

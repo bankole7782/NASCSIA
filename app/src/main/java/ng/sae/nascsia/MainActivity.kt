@@ -32,19 +32,16 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DecideFirstActivity() {
     val context = LocalContext.current
-    val userDataFile = File(context.getExternalFilesDir(""), "user_data.json")
+    val userDataFile = File(context.getExternalFilesDir(""), "user_data.txt")
     if (!userDataFile.exists()) {
         context.startActivity(Intent(context, LoginActivity::class.java))
         return
     }
 
-    val userDataParts = userDataFile.readText().split("\n")
-    val userDataAccessCode = userDataParts[0]
-    val userDataUserName = userDataParts[1]
-    if (userDataAccessCode.startsWith("c")) {
+    val accessMap = retrieveAccessMap(context)
+    if (accessMap["access_code"]!!.startsWith("c")) {
         context.startActivity(Intent(context, ProductionPlanActivity::class.java))
-//        ProductionPlanScreen()
-    } else if (userDataAccessCode.startsWith(prefix="i")) {
+    } else if (accessMap["access_code"]!!.startsWith(prefix="i")) {
 
     } else {
         Toast.makeText(context, "Invalid credentials.", Toast.LENGTH_LONG).show()
