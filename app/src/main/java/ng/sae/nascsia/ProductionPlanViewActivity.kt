@@ -1,15 +1,20 @@
 package ng.sae.nascsia
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -17,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import ng.sae.nascsia.ui.theme.NASCSIATheme
+import java.io.File
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.iterator
@@ -103,16 +110,58 @@ fun PPViewScreen(item: Map<String, String>, planFileName: String?, modifier: Mod
             contentScale = ContentScale.Crop
         )
 
-        // Sync Button
-        Button(
-            onClick = {
-                // sync info
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
+        Spacer(modifier= Modifier.height(20.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Delete Plan", fontSize = 18.sp)
+            var enableDeleteBtn: Boolean  = true
+            var enablePushBtn : Boolean = true
+            if ("field_id" in item) {
+                enableDeleteBtn = false
+                enablePushBtn = false
+            }
+            Button(
+                onClick = {
+                    // delete photos
+                    val planPhotosDir = File(context.getExternalFilesDir(""), "plan_photos")
+                    val photo1 = File(planPhotosDir, item["receipt_photo"]!!)
+                    val photo2 = File(planPhotosDir, item["field_photo_1"]!!)
+                    val photo3 = File(planPhotosDir, item["field_photo_2"]!!)
+
+                    photo1.delete()
+                    photo2.delete()
+                    photo3.delete()
+
+                    // delete plan file
+                    val planFile = File(context.getExternalFilesDir(""), "plans/"+planFileName)
+                    planFile.delete()
+
+                    context.startActivity(Intent(context, ProductionPlanActivity::class.java))
+
+                },
+                enabled = enableDeleteBtn,
+                modifier = Modifier
+                    .height(56.dp)
+            ) {
+                Text("Delete Plan", fontSize = 18.sp)
+            }
+
+            Spacer(modifier= Modifier.width(15.dp))
+
+            Button(
+                onClick = {
+                    // sync info
+                },
+                enabled = enablePushBtn,
+                modifier = Modifier
+                    .height(56.dp)
+            ) {
+                Text("Push Plan", fontSize = 18.sp)
+            }
+
         }
 
     }

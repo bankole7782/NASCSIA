@@ -156,9 +156,12 @@ fun SeedSourceScreen() {
                     // Simple validation
 
                     if (info.productionYear.isEmpty() || info.quantityProcured.isEmpty() ||
-                        info.seedCodexNumber.isEmpty() || info.supplierName.isEmpty()) {
+                        info.supplierName.isEmpty()) {
                         Toast.makeText(context, "Please fill out all fields.", Toast.LENGTH_SHORT).show()
                     } else {
+                        Toast.makeText(context,  "Step 3 of 4",Toast.LENGTH_LONG).show()
+
+
                         PlanDefMap["srcProductionYear"] = info.productionYear
                         PlanDefMap["srcQuantityProcured"] = info.quantityProcured
                         PlanDefMap["srcSeedCodexNumber"] = info.seedCodexNumber
@@ -173,7 +176,7 @@ fun SeedSourceScreen() {
                     .fillMaxWidth()
                     .height(56.dp)
             ) {
-                Text("Submit Production Plan")
+                Text("Next")
             }
         }
     }

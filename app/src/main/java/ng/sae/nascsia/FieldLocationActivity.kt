@@ -206,7 +206,7 @@ fun FieldLocationScreen(modifier: Modifier) {
                         || plantingArea.isBlank() || latitude.isBlank() || longitude.isBlank() ) {
                         Toast.makeText(context, "Please fill in all field details.", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(context,  "Step 1 of 3",Toast.LENGTH_LONG).show()
+                        Toast.makeText(context,  "Step 1 of 4",Toast.LENGTH_LONG).show()
 
                         PlanDefMap["state"] = state
                         PlanDefMap["address"] = address
@@ -223,7 +223,7 @@ fun FieldLocationScreen(modifier: Modifier) {
                     .fillMaxWidth()
                     .height(56.dp)
             ) {
-                Text("Submit Location Data", fontSize = 18.sp)
+                Text("Next", fontSize = 18.sp)
             }
             Spacer(modifier = Modifier.height(16.dp))
         }

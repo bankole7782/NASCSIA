@@ -96,18 +96,6 @@ fun ProductionPlanScreen(modifier: Modifier = Modifier) {
         }
 
         Spacer(modifier = Modifier.height(4.dp))
-
-        // Sync Button
-        Button(
-            onClick = {
-                // sync info
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-        ) {
-            Text("Sync with NASC", fontSize = 18.sp)
-        }
     }
 }
 

@@ -264,7 +264,7 @@ fun CropInfoScreen() {
                         cropInfoState.plantingDate.isEmpty()) {
                         Toast.makeText(context, "Please fill out all fields.", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(context,  "Step 2 of 3",Toast.LENGTH_LONG).show()
+                        Toast.makeText(context,  "Step 2 of 4",Toast.LENGTH_LONG).show()
 
                         showSubmissionMessage = true
                         // Reset form state after successful submission
@@ -284,7 +284,7 @@ fun CropInfoScreen() {
                     .fillMaxWidth()
                     .height(56.dp)
             ) {
-                Text("Submit Crop Information")
+                Text("Next")
             }
 
         }

@@ -52,3 +52,5 @@ val cropData = mapOf(
         "Hubara", "Imam", "JIRANI", "LACRI White=6", "LCRI Whit-5", "LCRI whit-6", "Norman", "Norman Boulaug", "Reyna-28"),
     "Yam" to listOf("Asiedu", "Kpamyo")
 )
+
+val SERVER_ADDR: String = "192.168.1.70"

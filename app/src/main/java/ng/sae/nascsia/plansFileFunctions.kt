@@ -64,7 +64,7 @@ fun deserializePlan(context: Context, planFileName: String?): Map<String, String
     for (item in planFileTextParts) {
         val itemParts = item.split(":")
         if (itemParts.size == 2) {
-            outMap[itemParts[0]] = itemParts[1].replace("____", "\n")
+            outMap[itemParts[0]] = itemParts[1].replace("____", "\n").trim()
         }
     }
     return outMap
