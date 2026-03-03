@@ -1,8 +1,7 @@
-package ng.sae.nascsia
+package ng.sae.nascsia.pplans
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -70,7 +69,7 @@ fun PPViewScreen(item: Map<String, String>, planFileName: String?, modifier: Mod
         Text(
             text = "Production Plan: " + getDateStrFromFilename(planFileName!!),
             fontSize = 30.sp,
-            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(10.dp))

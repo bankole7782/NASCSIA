@@ -34,9 +34,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ng.sae.nascsia.pplans.ProductionPlanActivity
 import ng.sae.nascsia.ui.theme.NASCSIATheme
 import java.io.File
 
@@ -81,7 +84,7 @@ fun LoginScreen() {
             Text(
                 text = "NASC SIA (Seed Inspection App)",
                 fontSize = 20.sp,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
@@ -108,7 +111,7 @@ fun LoginScreen() {
                 leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Password Icon") },
                 visualTransformation = PasswordVisualTransformation(), // Hides text input
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = androidx.compose.ui.text.input.KeyboardType.Password
+                    keyboardType = KeyboardType.Password
                 ),
                 modifier = Modifier.fillMaxWidth()
             )

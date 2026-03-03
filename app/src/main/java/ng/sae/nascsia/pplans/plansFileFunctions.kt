@@ -1,11 +1,11 @@
-package ng.sae.nascsia
+package ng.sae.nascsia.pplans
 
 import android.content.Context
-import android.util.Log
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.collections.iterator
 
 data class UserData(val accessCode: String, val userName: String)
 

@@ -15,17 +15,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NASCSIA">
         <activity
-            android:name=".PPlanPhotosActivity"
+            android:name=".pplans.PPlanPhotosActivity"
             android:exported="false"
             android:label="@string/title_activity_pplan_photos"
             android:theme="@style/Theme.NASCSIA" />
         <activity
-            android:name=".ProductionPlanViewActivity"
+            android:name=".pplans.ProductionPlanViewActivity"
             android:exported="false"
             android:label="@string/title_activity_production_plan_view"
             android:theme="@style/Theme.NASCSIA" />
         <activity
-            android:name=".ProductionPlanActivity"
+            android:name=".pplans.ProductionPlanActivity"
             android:exported="false"
             android:label="@string/title_activity_fields"
             android:theme="@style/Theme.NASCSIA" />
@@ -35,17 +35,17 @@
             android:label="@string/title_activity_login_screen"
             android:theme="@style/Theme.NASCSIA" />
         <activity
-            android:name=".SeedSourceActivity"
+            android:name=".pplans.SeedSourceActivity"
             android:exported="false"
             android:label="@string/title_activity_seed_source"
             android:theme="@style/Theme.NASCSIA" />
         <activity
-            android:name=".CropInformationActivity"
+            android:name=".pplans.CropInformationActivity"
             android:exported="false"
             android:label="@string/title_activity_crop_information"
             android:theme="@style/Theme.NASCSIA" />
         <activity
-            android:name=".FieldLocationActivity"
+            android:name=".pplans.FieldLocationActivity"
             android:exported="false"
             android:label="@string/title_activity_field_location"
             android:theme="@style/Theme.NASCSIA" />

@@ -1,4 +1,4 @@
-package ng.sae.nascsia
+package ng.sae.nascsia.pplans
 
 var PlanDefMap: MutableMap<String, Any> = mutableMapOf()
 

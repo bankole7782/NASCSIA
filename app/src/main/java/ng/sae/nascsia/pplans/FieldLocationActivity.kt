@@ -1,6 +1,7 @@
-package ng.sae.nascsia
+package ng.sae.nascsia.pplans
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -294,7 +295,7 @@ fun StateDropdown(selectedState: String, onStateSelected: (String) -> Unit) {
  */
 private fun getLastLocation(
     client: FusedLocationProviderClient,
-    context: android.content.Context,
+    context: Context,
     onLocationReceived: (String, String) -> Unit
 ) {
     // Check permission again, although it should be granted at this point
