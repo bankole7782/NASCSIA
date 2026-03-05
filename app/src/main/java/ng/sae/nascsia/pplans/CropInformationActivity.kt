@@ -244,7 +244,7 @@ fun CropInfoScreen() {
                 value = cropInfoState.plantingDate,
                 onValueChange = { cropInfoState = cropInfoState.copy(plantingDate = it) },
                 label = { Text("Proposed Date of Planting") },
-                placeholder = { Text("DD/MM/YYYY") },
+                placeholder = { Text("yyyy-MM-dd") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
             )

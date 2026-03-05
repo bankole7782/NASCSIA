@@ -1,6 +1,7 @@
 package ng.sae.nascsia.pplans
 
 import android.content.Context
+import android.util.Log
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -9,6 +10,9 @@ import kotlin.collections.iterator
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import ng.sae.nascsia.retrieveAccessMap
+import okhttp3.FormBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.util.Calendar
 
 data class UserData(val accessCode: String, val userName: String)
@@ -84,4 +88,31 @@ fun getTodayDateAsStringLegacy(): String {
 
     // Format the current time from the calendar instance as a string
     return dateFormat.format(calendar.time)
+}
+
+fun postFormData(url: String, formData: Map<String, String>): Boolean {
+    val client = OkHttpClient()
+
+    // Build the form body
+    val formBodyBuilder = FormBody.Builder()
+    for ((key, value) in formData) {
+        formBodyBuilder.add(key, value)
+    }
+    val formBody = formBodyBuilder.build()
+
+    // Build the request
+    val request = Request.Builder()
+        .url(url)
+        .post(formBody) // Use .post() with the form body
+        .build()
+
+    // Execute the request (synchronously in this example, use client.newCall(request).enqueue(...) for asynchronous)
+    client.newCall(request).execute().use { response ->
+        if (!response.isSuccessful) {
+            Log.i("Post form response", response.body!!.string())
+            return false
+        }
+
+        return true
+    }
 }

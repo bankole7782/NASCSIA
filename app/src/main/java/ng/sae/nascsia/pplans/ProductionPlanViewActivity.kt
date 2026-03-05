@@ -1,6 +1,8 @@
 package ng.sae.nascsia.pplans
 
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,6 +23,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -29,12 +36,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.format
+import id.zelory.compressor.constraint.quality
+import id.zelory.compressor.constraint.resolution
+import id.zelory.compressor.constraint.size
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import ng.sae.nascsia.RollingLoadingIcon
+import ng.sae.nascsia.SERVER_ADDR
 import ng.sae.nascsia.retrieveAccessMap
 import ng.sae.nascsia.ui.theme.NASCSIATheme
 import java.io.File
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.iterator
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.IOException
 
 class ProductionPlanViewActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,10 +82,12 @@ class ProductionPlanViewActivity : ComponentActivity() {
 }
 
 @Composable
-fun PPViewScreen(item: Map<String, String>, planFileName: String?, modifier: Modifier = Modifier) {
+fun PPViewScreen(item: MutableMap<String, String>, planFileName: String?, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     val accessMap = retrieveAccessMap(context)
+    val coroutineScope = rememberCoroutineScope()
+    var isRolling by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -163,7 +185,51 @@ fun PPViewScreen(item: Map<String, String>, planFileName: String?, modifier: Mod
 
             Button(
                 onClick = {
+                    isRolling = true
                     // sync info
+                    val photosDir = File(context.getExternalFilesDir(""), "plan_photos")
+                    val companyPlanPhotosDir = File(photosDir, accessMap["company"]!!)
+
+                    val photo1 = File(companyPlanPhotosDir, item["receipt_photo"]!!)
+                    val photo2 = File(companyPlanPhotosDir, item["field_photo_1"]!!)
+                    val photo3 = File(companyPlanPhotosDir, item["field_photo_2"]!!)
+
+                    coroutineScope.launch(Dispatchers.IO) {
+                        Compressor.compress(context, photo1) {
+                            resolution(1280, 720) // Max resolution
+                            quality(80)            // 80% quality
+                            format(Bitmap.CompressFormat.JPEG) // Convert to WEBP
+                            size(697_152)        // Max file size in bytes (600KB)
+                        }
+                        Compressor.compress(context, photo2) {
+                            resolution(1280, 720) // Max resolution
+                            quality(80)            // 80% quality
+                            format(Bitmap.CompressFormat.JPEG) // Convert to WEBP
+                            size(697_152)        // Max file size in bytes (600KB)
+                        }
+
+                        Compressor.compress(context, photo3) {
+                            resolution(1280, 720) // Max resolution
+                            quality(80)            // 80% quality
+                            format(Bitmap.CompressFormat.JPEG) // Convert to WEBP
+                            size(697_152)        // Max file size in bytes (600KB)
+                        }
+
+                        val uploadUrl = SERVER_ADDR + "/submit_photo/" + accessMap["access_code"]!!
+                        val photo1ServerName = uploadImage(photo1, uploadUrl)
+                        val photo2ServerName = uploadImage(photo2, uploadUrl)
+                        val photo3ServerName = uploadImage(photo3, uploadUrl)
+
+                        val itemCopy = item.toMutableMap()
+                        itemCopy["receipt_photo"] = photo1ServerName
+                        itemCopy["field_photo_1"] = photo2ServerName
+                        itemCopy["field_photo_2"] = photo3ServerName
+
+                        val formDataUrl = SERVER_ADDR + "/submit_pplan/" + accessMap["access_code"]!!
+
+                        postFormData(formDataUrl, itemCopy)
+                        isRolling = false
+                    }
                 },
                 enabled = enablePushBtn,
                 modifier = Modifier
@@ -175,5 +241,46 @@ fun PPViewScreen(item: Map<String, String>, planFileName: String?, modifier: Mod
         }
 
     }
+
+    RollingLoadingIcon(isRolling)
+
 }
 
+fun uploadImage(file: File, uploadUrl: String): String {
+    val client = OkHttpClient()
+
+    // Define the media type for the image
+    val mediaType = "image/jpeg".toMediaTypeOrNull()
+
+    // Create the RequestBody for the file
+    val requestFile = file.asRequestBody(mediaType)
+
+    // Build the MultipartBody request body
+    val requestBody = MultipartBody.Builder()
+        .setType(MultipartBody.FORM)
+//        .addFormDataPart("userid", userId) // Add other form data if needed
+        .addFormDataPart(
+            "file", // The name expected by the server
+            file.name,
+            requestFile
+        )
+        .build()
+
+    // Build the final POST request
+    val request = Request.Builder()
+        .url(uploadUrl)
+        .post(requestBody)
+        .build()
+
+    client.newCall(request).execute().use { response ->
+        if (!response.isSuccessful) {
+            return ""
+        }
+        val retMap = jsonToMutableMap(response.body.string())
+        if (retMap["error"] == "false") {
+            return retMap["photo_name"]!!
+        }
+    }
+
+    return ""
+}
