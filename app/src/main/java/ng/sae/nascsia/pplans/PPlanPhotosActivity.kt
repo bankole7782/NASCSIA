@@ -20,7 +20,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage // Requires Coil dependency
+import com.google.gson.Gson
+import ng.sae.nascsia.retrieveAccessMap
 import ng.sae.nascsia.ui.theme.NASCSIATheme
+import org.json.JSONObject
 import java.io.File
 
 class PPlanPhotosActivity : ComponentActivity() {
@@ -173,7 +176,23 @@ fun PPlanPhotosScreen() {
                 PlanDefMap["field_photo_1"] = field1PhotoName
                 PlanDefMap["field_photo_2"] = field2PhotoName
 
-                serializePlan(context, PlanDefMap)
+                val accessMap = retrieveAccessMap(context)
+                PlanDefMap["username"] = accessMap["username"]!!
+                PlanDefMap["date"] = getTodayDateAsStringLegacy()
+
+                val gson = Gson()
+                val jsonString = gson.toJson(PlanDefMap)
+
+                val plansDir = File(context.getExternalFilesDir(""), "plans")
+                plansDir.mkdirs()
+
+                val planName = accessMap["username"]!! + "_" + generateRandomFourDigitInt().toString() + ".json"
+
+                val planFileName = "plans/$planName"
+                val planFile = File(context.getExternalFilesDir(""), planFileName)
+                planFile.writeText(jsonString)
+
+//                serializePlan(context, PlanDefMap)
                 PlanDefMap = mutableMapOf()
 
                 context.startActivity(Intent(context, ProductionPlanActivity::class.java))
@@ -191,7 +210,7 @@ fun saveImageToInternalStorage(context: Context, uri: Uri, filename: String): St
     val inputStream = context.contentResolver.openInputStream(uri)
 //    val file = File(context.getExternalFilesDir(""), "receipt_${System.currentTimeMillis()}.jpg")
     val planPhotos = File(context.getExternalFilesDir(""), "plan_photos")
-    planPhotos.mkdirs()
+        planPhotos.mkdirs()
 
     val file = File(planPhotos, filename)
 

@@ -167,9 +167,9 @@ fun PPView(item: Map<String, String>) {
         Column(
         modifier = Modifier.padding(10.dp)
         ) {
-            Text(text = "Date: " +  item["plan_name"]!!, fontSize = 20.sp)
-            Text(text = "Crop: " + item["plan_crop"]!!)
-            Text(text = "Address: " + item["plan_address"]!!)
+            Text(text = "Date: " +  item["date"]!!, fontSize = 20.sp)
+            Text(text = "Crop: " + item["crop"]!!)
+            Text(text = "Address: " + item["address"]!!)
             Text(text="Synced: false")
             Spacer(modifier = Modifier.height(4.dp))
         }
@@ -185,14 +185,10 @@ fun allPlans(context: Context) : List<Map<String, String>> {
 
     val plans = plansDir.listFiles()
     for (plan in plans!!) {
-        var planDetailsMap = deserializePlan(context, plan.name)
-
-        var retMap: MutableMap<String, String> = mutableMapOf()
-        retMap["plan_name"] = plan.name
-        retMap["plan_address"] = planDetailsMap["address"].toString()
-        retMap["plan_crop"] = planDetailsMap["crop"].toString()
-
-        ret.add(retMap)
+        val planFile = File(context.getExternalFilesDir(""), "plans/"+plan.name)
+        val planDetailsMap = jsonToMutableMap(planFile.readText())
+        planDetailsMap["plan_name"] = plan.name
+        ret.add(planDetailsMap)
     }
 
     return ret

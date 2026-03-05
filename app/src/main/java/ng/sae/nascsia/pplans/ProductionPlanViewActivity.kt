@@ -40,7 +40,8 @@ class ProductionPlanViewActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val planFileName = intent.getStringExtra("planFileName")
-        val planDetails = deserializePlan(this, planFileName)
+        val planFile = File(getExternalFilesDir(""), "plans/"+planFileName)
+        val planDetails = jsonToMutableMap(planFile.readText())
 
         setContent {
             NASCSIATheme {
@@ -67,8 +68,8 @@ fun PPViewScreen(item: Map<String, String>, planFileName: String?, modifier: Mod
     ) {
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = "Production Plan: " + getDateStrFromFilename(planFileName!!),
-            fontSize = 30.sp,
+            text = "Production Plan: " + planFileName?.substring(0, planFileName.length-5),
+            fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )

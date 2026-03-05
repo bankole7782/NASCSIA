@@ -209,6 +209,7 @@ fun FieldLocationScreen(modifier: Modifier) {
                     } else {
                         Toast.makeText(context,  "Step 1 of 4",Toast.LENGTH_LONG).show()
 
+                        PlanDefMap["username"]
                         PlanDefMap["state"] = state
                         PlanDefMap["address"] = address
                         PlanDefMap["mobileNumber"] = mobileNumber

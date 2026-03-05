@@ -4,6 +4,7 @@ import android.R.attr.rotation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -55,16 +56,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ng.sae.nascsia.pplans.ProductionPlanActivity
 import ng.sae.nascsia.ui.theme.NASCSIATheme
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
 
-val SERVER_ADDR: String = "http://192.168.1.70:8085"
+val SERVER_ADDR: String = "http:////192.168.1.70:8085"
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,17 +155,20 @@ fun LoginScreen() {
                         return@Button
                     }
 
-                    coroutineScope.launch {
+                    coroutineScope.launch(Dispatchers.Main) {
                         isRolling = true
-//                        val loginStatus = validateAndStoreAcessCode(context, username, password)
-                        delay(10000L)
+                        var loginStatus: Boolean = false
+                        withContext(Dispatchers.IO) {
+                            loginStatus = validateAndStoreAcessCode(context, username, password)
+                        }
+//                        delay(10000L)
                         isRolling = false
-//                        if (loginStatus) {
-//                            Toast.makeText(context, "Login Successful! Hello, $username", Toast.LENGTH_LONG).show()
-//                            context.startActivity(Intent(context, ProductionPlanActivity::class.java))
-//                        } else {
-//                            Toast.makeText(context, "Login Failed. Check credentials.", Toast.LENGTH_SHORT).show()
-//                        }
+                        if (loginStatus) {
+                            Toast.makeText(context, "Login Successful! Hello, $username", Toast.LENGTH_LONG).show()
+                            context.startActivity(Intent(context, ProductionPlanActivity::class.java))
+                        } else {
+                            Toast.makeText(context, "Login Failed. Check credentials.", Toast.LENGTH_SHORT).show()
+                        }
                     }
 
                 },
@@ -189,23 +195,22 @@ fun validateAndStoreAcessCode(context: Context, username: String, accessCode: St
         // do network call check
         val client = OkHttpClient()
 
-        fun run() {
-            val loginURL = "$SERVER_ADDR/verify_accesscode/$accessCode"
-            val request = Request.Builder()
-                .url(loginURL).build()
+        val loginURL = "$SERVER_ADDR/verify_accesscode/$accessCode"
+        val request = Request.Builder()
+            .url(loginURL).build()
 
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) throw okio.IOException("Unexpected code $response")
-
-                for ((name, value) in response.headers) {
-                    println("$name: $value")
-                }
-
-                println(response.body!!.string())
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                Log.i("network", response.body.string())
+                return false
             }
+//            for ((name, value) in response.headers) {
+//                println("$name: $value")
+//            }
+
+            Log.i("validation code return", response.body.string())
         }
 
-        run()
         return false
     }
 }
@@ -237,16 +242,6 @@ fun RollingLoadingIcon(isLoading: Boolean) {
             ),
             label = "rotation"
         )
-//
-//        Icon(
-//            imageVector = Icons.Default.Refresh,
-//            contentDescription = "Loading",
-//            modifier = Modifier
-//                .padding(16.dp)
-//                .graphicsLayer {
-//                    rotationZ = angle // Rotates the icon
-//                }
-//        )
 
         // Overlay Box: Full screen, semi-transparent background
         Box(

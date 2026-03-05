@@ -6,6 +6,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.collections.iterator
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.util.Calendar
 
 data class UserData(val accessCode: String, val userName: String)
 
@@ -40,35 +43,6 @@ fun getCurrentTimeString(): String {
     return formatter.format(currentTime)
 }
 
-fun serializePlan(context: Context, inMap: MutableMap<String, Any>) {
-    // prepare for address
-    inMap["address"] = inMap["address"].toString().replace("\n", "____")
-    var outStr: String = ""
-    for ((key, value) in inMap) {
-        outStr += "$key: $value\n"
-    }
-
-    val plansDir = File(context.getExternalFilesDir(""), "plans")
-    plansDir.mkdirs()
-
-    val planFileName = "plans/" + getCurrentTimeString() + ".txt"
-    val planFile = File(context.getExternalFilesDir(""), planFileName)
-    planFile.writeText(outStr)
-}
-
-fun deserializePlan(context: Context, planFileName: String?): Map<String, String> {
-    var outMap: MutableMap<String, String> = mutableMapOf()
-    val planFile = File(context.getExternalFilesDir(""), "plans/"+planFileName)
-    val planFileText = planFile.readText()
-    val planFileTextParts  = planFileText.split("\n")
-    for (item in planFileTextParts) {
-        val itemParts = item.split(":")
-        if (itemParts.size == 2) {
-            outMap[itemParts[0]] = itemParts[1].replace("____", "\n").trim()
-        }
-    }
-    return outMap
-}
 
 fun getDateStrFromFilename(inStr: String): String {
     var tmp = inStr.replace(".txt", "")
@@ -80,4 +54,32 @@ fun getPhotoFile(context: Context, planPhotoName: String): File {
     val planPhotos = File(context.getExternalFilesDir(""), "plan_photos")
     val returnFile = File(planPhotos, planPhotoName.trim())
     return returnFile
+}
+
+
+fun generateRandomFourDigitInt(): Int {
+    val min = 1000
+    val max = 9999
+    // Generates a random integer in the range [1000, 9999]
+    val randomPin = (min..max).random()
+    return randomPin
+}
+
+fun jsonToMutableMap(jsonString: String): MutableMap<String, String> {
+    val gson = Gson()
+    // Define the type of the target map using TypeToken to handle generics
+    val type = object : TypeToken<MutableMap<String, String>>() {}.type
+    // Use fromJson() to deserialize the JSON string into the specified type
+    return gson.fromJson(jsonString, type)
+}
+
+fun getTodayDateAsStringLegacy(): String {
+    // Get a Calendar instance with the current date and time
+    val calendar = Calendar.getInstance()
+
+    // Define the desired format pattern and use the default locale
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+    // Format the current time from the calendar instance as a string
+    return dateFormat.format(calendar.time)
 }
