@@ -171,7 +171,11 @@ fun PPView(item: Map<String, String>) {
             Text(text = "Date: " +  item["date"]!!, fontSize = 20.sp)
             Text(text = "Crop: " + item["crop"]!!)
             Text(text = "Address: " + item["address"]!!)
-            Text(text="Synced: false")
+            if ("field_id" in item) {
+                Text(text="Synced: true", fontSize = 20.sp)
+            } else {
+                Text(text="Synced: false")
+            }
             Spacer(modifier = Modifier.height(4.dp))
         }
     }

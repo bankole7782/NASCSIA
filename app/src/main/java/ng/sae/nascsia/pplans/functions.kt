@@ -90,7 +90,7 @@ fun getTodayDateAsStringLegacy(): String {
     return dateFormat.format(calendar.time)
 }
 
-fun postFormData(url: String, formData: Map<String, String>): Boolean {
+fun postFormData(url: String, formData: Map<String, String>): String{
     val client = OkHttpClient()
 
     // Build the form body
@@ -109,10 +109,10 @@ fun postFormData(url: String, formData: Map<String, String>): Boolean {
     // Execute the request (synchronously in this example, use client.newCall(request).enqueue(...) for asynchronous)
     client.newCall(request).execute().use { response ->
         if (!response.isSuccessful) {
-            Log.i("Post form response", response.body!!.string())
-            return false
+           return response.body!!.string()
         }
 
-        return true
+        return response.body!!.string()
     }
+
 }

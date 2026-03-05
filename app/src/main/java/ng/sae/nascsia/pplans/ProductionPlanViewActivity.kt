@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.google.gson.Gson
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.format
 import id.zelory.compressor.constraint.quality
@@ -227,8 +229,23 @@ fun PPViewScreen(item: MutableMap<String, String>, planFileName: String?, modifi
 
                         val formDataUrl = SERVER_ADDR + "/submit_pplan/" + accessMap["access_code"]!!
 
-                        postFormData(formDataUrl, itemCopy)
+                        val retStr = postFormData(formDataUrl, itemCopy)
+                        val retObj = jsonToMutableMap(retStr)
+
+                        item["field_id"] = retObj["field_id"]!!
+
+                        val gson = Gson()
+                        val jsonString = gson.toJson(item)
+
+                        val plansDir = File(context.getExternalFilesDir(""), "plans")
+                        val companyPlansDir = File(plansDir, accessMap["company"]!!)
+                        val planFile = File(companyPlansDir, planFileName!!)
+                        planFile.writeText(jsonString)
+
                         isRolling = false
+
+                        Toast.makeText(context, "Push Successful", Toast.LENGTH_LONG).show()
+                        context.startActivity(Intent(context, ProductionPlanActivity::class.java))
                     }
                 },
                 enabled = enablePushBtn,
