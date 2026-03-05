@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import ng.sae.nascsia.retrieveAccessMap
 import ng.sae.nascsia.ui.theme.NASCSIATheme
 import java.io.File
 import kotlin.collections.component1
@@ -39,8 +40,12 @@ class ProductionPlanViewActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val accessMap = retrieveAccessMap(this)
+        val plansDir = File(getExternalFilesDir(""), "plans")
+        val companyPlansDir = File(plansDir, accessMap["company"]!!)
         val planFileName = intent.getStringExtra("planFileName")
-        val planFile = File(getExternalFilesDir(""), "plans/"+planFileName)
+        val planFile = File(companyPlansDir, planFileName!!)
         val planDetails = jsonToMutableMap(planFile.readText())
 
         setContent {
@@ -60,6 +65,7 @@ class ProductionPlanViewActivity : ComponentActivity() {
 fun PPViewScreen(item: Map<String, String>, planFileName: String?, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+    val accessMap = retrieveAccessMap(context)
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -126,17 +132,21 @@ fun PPViewScreen(item: Map<String, String>, planFileName: String?, modifier: Mod
             Button(
                 onClick = {
                     // delete photos
-                    val planPhotosDir = File(context.getExternalFilesDir(""), "plan_photos")
-                    val photo1 = File(planPhotosDir, item["receipt_photo"]!!)
-                    val photo2 = File(planPhotosDir, item["field_photo_1"]!!)
-                    val photo3 = File(planPhotosDir, item["field_photo_2"]!!)
+                    val photosDir = File(context.getExternalFilesDir(""), "plan_photos")
+                    val companyPlanPhotosDir = File(photosDir, accessMap["company"]!!)
+
+                    val photo1 = File(companyPlanPhotosDir, item["receipt_photo"]!!)
+                    val photo2 = File(companyPlanPhotosDir, item["field_photo_1"]!!)
+                    val photo3 = File(companyPlanPhotosDir, item["field_photo_2"]!!)
 
                     photo1.delete()
                     photo2.delete()
                     photo3.delete()
 
                     // delete plan file
-                    val planFile = File(context.getExternalFilesDir(""), "plans/"+planFileName)
+                    val plansDir = File(context.getExternalFilesDir(""), "plans")
+                    val companyPlansDir = File(plansDir, accessMap["company"]!!)
+                    val planFile = File(companyPlansDir, planFileName!!)
                     planFile.delete()
 
                     context.startActivity(Intent(context, ProductionPlanActivity::class.java))

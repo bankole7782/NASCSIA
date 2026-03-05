@@ -3,6 +3,7 @@ package ng.sae.nascsia.pplans
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -178,14 +179,17 @@ fun PPView(item: Map<String, String>) {
 
 fun allPlans(context: Context) : List<Map<String, String>> {
     val ret: MutableList<Map<String, String>> = mutableListOf()
+    val accessMap = retrieveAccessMap(context)
     val plansDir = File(context.getExternalFilesDir(""), "plans")
-    if (! plansDir.exists() && ! plansDir.isDirectory) {
+    val companyPlansDir = File(plansDir, accessMap["company"]!!)
+
+    if (! companyPlansDir.exists() && ! companyPlansDir.isDirectory) {
         return mutableListOf<Map<String, String>>()
     }
 
-    val plans = plansDir.listFiles()
+    val plans = companyPlansDir.listFiles()
     for (plan in plans!!) {
-        val planFile = File(context.getExternalFilesDir(""), "plans/"+plan.name)
+        val planFile = File(companyPlansDir, plan.name)
         val planDetailsMap = jsonToMutableMap(planFile.readText())
         planDetailsMap["plan_name"] = plan.name
         ret.add(planDetailsMap)

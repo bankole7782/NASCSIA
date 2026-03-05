@@ -62,6 +62,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ng.sae.nascsia.pplans.ProductionPlanActivity
+import ng.sae.nascsia.pplans.jsonToMutableMap
 import ng.sae.nascsia.ui.theme.NASCSIATheme
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -187,7 +188,7 @@ fun LoginScreen() {
 fun validateAndStoreAcessCode(context: Context, username: String, accessCode: String):Boolean {
     if (accessCode == "cp" || accessCode == "ip") {
         // test accounts
-        val userStr = "access_code: $accessCode\nusername: $username\ncompany: Test 1"
+        val userStr = "access_code: $accessCode\nusername: $username\ncompany: Test1"
         val userDataFile = File(context.getExternalFilesDir(""), "user_data.txt")
         userDataFile.writeText(userStr)
         return true
@@ -201,14 +202,16 @@ fun validateAndStoreAcessCode(context: Context, username: String, accessCode: St
 
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) {
-                Log.i("network", response.body.string())
                 return false
             }
-//            for ((name, value) in response.headers) {
-//                println("$name: $value")
-//            }
 
-            Log.i("validation code return", response.body.string())
+            val retMap = jsonToMutableMap(response.body.string())
+            if (retMap["error"] == "false") {
+                val userStr = "access_code: $accessCode\nusername: $username\ncompany: " + retMap["company_name"]
+                val userDataFile = File(context.getExternalFilesDir(""), "user_data.txt")
+                userDataFile.writeText(userStr)
+                return true
+            }
         }
 
         return false

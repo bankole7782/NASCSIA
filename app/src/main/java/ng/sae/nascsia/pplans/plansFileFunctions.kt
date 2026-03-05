@@ -8,6 +8,7 @@ import java.util.Locale
 import kotlin.collections.iterator
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import ng.sae.nascsia.retrieveAccessMap
 import java.util.Calendar
 
 data class UserData(val accessCode: String, val userName: String)
@@ -51,9 +52,10 @@ fun getDateStrFromFilename(inStr: String): String {
 }
 
 fun getPhotoFile(context: Context, planPhotoName: String): File {
-    val planPhotos = File(context.getExternalFilesDir(""), "plan_photos")
-    val returnFile = File(planPhotos, planPhotoName.trim())
-    return returnFile
+    val accessMap = retrieveAccessMap(context)
+    val plansDir = File(context.getExternalFilesDir(""), "plan_photos")
+    val companyPlanPhotosDir = File(plansDir, accessMap["company"]!!)
+    return File(companyPlanPhotosDir, planPhotoName.trim())
 }
 
 

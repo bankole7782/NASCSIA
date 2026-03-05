@@ -184,12 +184,11 @@ fun PPlanPhotosScreen() {
                 val jsonString = gson.toJson(PlanDefMap)
 
                 val plansDir = File(context.getExternalFilesDir(""), "plans")
-                plansDir.mkdirs()
+                val companyPlansDir = File(plansDir, accessMap["company"]!!)
+                companyPlansDir.mkdirs()
 
                 val planName = accessMap["username"]!! + "_" + generateRandomFourDigitInt().toString() + ".json"
-
-                val planFileName = "plans/$planName"
-                val planFile = File(context.getExternalFilesDir(""), planFileName)
+                val planFile = File(companyPlansDir, planName)
                 planFile.writeText(jsonString)
 
 //                serializePlan(context, PlanDefMap)
@@ -208,11 +207,12 @@ fun PPlanPhotosScreen() {
 
 fun saveImageToInternalStorage(context: Context, uri: Uri, filename: String): String? {
     val inputStream = context.contentResolver.openInputStream(uri)
-//    val file = File(context.getExternalFilesDir(""), "receipt_${System.currentTimeMillis()}.jpg")
-    val planPhotos = File(context.getExternalFilesDir(""), "plan_photos")
-        planPhotos.mkdirs()
+    val accessMap = retrieveAccessMap(context)
+    val plansDir = File(context.getExternalFilesDir(""), "plan_photos")
+    val companyPlanPhotosDir = File(plansDir, accessMap["company"]!!)
+    companyPlanPhotosDir.mkdirs()
 
-    val file = File(planPhotos, filename)
+    val file = File(companyPlanPhotosDir, filename)
 
     return try {
         inputStream?.use { input ->
